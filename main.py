@@ -62,6 +62,28 @@ def show_menu() -> None:
     print("=" * 32)
 
 
+def add_prompt(prompts: list[dict]) -> None:
+    """1. 신규 프롬프트를 등록하는 함수."""
+    print("\n=== 프롬프트 추가 ===")
+    title = get_non_empty_input("제목: ")
+    content = get_non_empty_input("내용: ")
+    category = select_category()
+
+    next_id = max((p.get("id", 0) for p in prompts), default=0) + 1
+
+    new_item = {
+        "id": next_id,
+        "title": title,
+        "content": content,
+        "category": category,
+        "favorite": False,
+        "views": 0,
+    }
+    prompts.append(new_item)
+    print("\n프롬프트가 추가되었습니다!")
+
+
+
 def main() -> None:
     """프로그램 진입점 및 메인 실행 루프."""
     prompts = copy.deepcopy(INITIAL_PROMPTS)
@@ -70,7 +92,9 @@ def main() -> None:
         show_menu()
         choice = input("선택: ").strip()
 
-        if choice == "0":
+        if choice == "1":
+            add_prompt(prompts)
+        elif choice == "0":
             print("\n프로그램을 종료합니다. 이용해주셔서 감사합니다!")
             break
         else:
