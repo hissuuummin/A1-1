@@ -83,6 +83,19 @@ def add_prompt(prompts: list[dict]) -> None:
     print("\n프롬프트가 추가되었습니다!")
 
 
+def show_list(prompts: list[dict]) -> None:
+    """2. 전체 프롬프트 목록을 출력하는 함수."""
+    print("\n=== 프롬프트 목록 ===")
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return
+
+    for idx, p in enumerate(prompts, start=1):
+        star = " ⭐" if p.get("favorite") else ""
+        print(f"{idx}. [{p['category']}] {p['title']}{star}")
+
+    print(f"\n총 {len(prompts)}개의 프롬프트")
+
 
 def main() -> None:
     """프로그램 진입점 및 메인 실행 루프."""
@@ -94,6 +107,8 @@ def main() -> None:
 
         if choice == "1":
             add_prompt(prompts)
+        elif choice == "2":
+            show_list(prompts)
         elif choice == "0":
             print("\n프로그램을 종료합니다. 이용해주셔서 감사합니다!")
             break
