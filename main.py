@@ -147,6 +147,67 @@ def search_prompt(prompts: list[dict]) -> None:
     print(f"\n{len(results)}개의 프롬프트를 찾았습니다.")
 
 
+def show_detail(prompts: list[dict]) -> None:
+    """5. 프롬프트 상세 내용을 출력하고 조회수를 증가시키는 함수."""
+    print("\n=== 프롬프트 상세 보기 ===")
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return
+
+    choice = input("번호 입력: ").strip()
+    if not choice.isdigit() or not (1 <= int(choice) <= len(prompts)):
+        print(">> 올바른 프롬프트 번호를 입력해주세요.")
+        return
+
+    p = prompts[int(choice) - 1]
+    p["views"] = p.get("views", 0) + 1
+
+    star = "⭐" if p.get("favorite") else "해제됨"
+    print("\n" + "─" * 40)
+    print(f"제목: {p['title']}")
+    print(f"카테고리: {p['category']}")
+    print(f"즐겨찾기: {star}")
+    print(f"조회수: {p['views']}회")
+    print("─" * 40)
+    print("내용:")
+    print(p["content"])
+    print("─" * 40)
+
+
+def toggle_favorite(prompts: list[dict]) -> None:
+    """6. 프롬프트 번호를 입력받아 즐겨찾기를 추가/해제하는 함수."""
+    print("\n=== 즐겨찾기 관리 ===")
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return
+
+    choice = input("프롬프트 번호 입력: ").strip()
+    if not choice.isdigit() or not (1 <= int(choice) <= len(prompts)):
+        print(">> 올바른 프롬프트 번호를 입력해주세요.")
+        return
+
+    p = prompts[int(choice) - 1]
+    p["favorite"] = not p.get("favorite", False)
+
+    status_str = "추가" if p["favorite"] else "해제"
+    print(f"'{p['title']}' 프롬프트를 즐겨찾기에 {status_str}했습니다!")
+
+
+def show_favorites(prompts: list[dict]) -> None:
+    """7. 즐겨찾기된 프롬프트만 모아서 출력하는 함수."""
+    print("\n=== 즐겨찾기 목록 ===")
+    favorites = [p for p in prompts if p.get("favorite")]
+
+    if not favorites:
+        print("즐겨찾기로 등록된 프롬프트가 없습니다.")
+        return
+
+    for idx, p in enumerate(favorites, start=1):
+        print(f"{idx}. [{p['category']}] {p['title']} ⭐")
+
+    print(f"\n총 {len(favorites)}개의 즐겨찾기")
+
+
 def main() -> None:
     """프로그램 진입점 및 메인 실행 루프."""
     prompts = copy.deepcopy(INITIAL_PROMPTS)
@@ -163,6 +224,12 @@ def main() -> None:
             filter_by_category(prompts)
         elif choice == "4":
             search_prompt(prompts)
+        elif choice == "5":
+            show_detail(prompts)
+        elif choice == "6":
+            toggle_favorite(prompts)
+        elif choice == "7":
+            show_favorites(prompts)
         elif choice == "0":
             print("\n프로그램을 종료합니다. 이용해주셔서 감사합니다!")
             break
