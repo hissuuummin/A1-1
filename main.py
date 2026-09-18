@@ -97,6 +97,56 @@ def show_list(prompts: list[dict]) -> None:
     print(f"\n총 {len(prompts)}개의 프롬프트")
 
 
+def filter_by_category(prompts: list[dict]) -> None:
+    """3. 카테고리를 선택받아 해당 카테고리 프롬프트만 출력하는 함수."""
+    print("\n=== 카테고리별 조회 ===")
+    available_categories = list(dict.fromkeys(CATEGORIES + [p["category"] for p in prompts]))
+
+    for idx, cat in enumerate(available_categories, start=1):
+        print(f"{idx}) {cat}")
+
+    choice = input("선택: ").strip()
+    if not choice.isdigit() or not (1 <= int(choice) <= len(available_categories)):
+        print(">> 올바른 카테고리 번호를 입력해주세요.")
+        return
+
+    selected_category = available_categories[int(choice) - 1]
+    filtered = [p for p in prompts if p["category"] == selected_category]
+
+    print(f"\n[{selected_category}] 카테고리 프롬프트:")
+    if not filtered:
+        print("해당 카테고리에 프롬프트가 없습니다.")
+        return
+
+    for idx, p in enumerate(filtered, start=1):
+        star = " ⭐" if p.get("favorite") else ""
+        print(f"{idx}. {p['title']}{star}")
+
+    print(f"\n총 {len(filtered)}개의 프롬프트")
+
+
+def search_prompt(prompts: list[dict]) -> None:
+    """4. 키워드를 입력받아 제목 또는 내용에 포함된 프롬프트를 검색하는 함수."""
+    print("\n=== 프롬프트 검색 ===")
+    keyword = get_non_empty_input("검색어: ").lower()
+
+    results = [
+        p for p in prompts
+        if keyword in p["title"].lower() or keyword in p["content"].lower()
+    ]
+
+    print("\n검색 결과:")
+    if not results:
+        print("일치하는 프롬프트가 없습니다.")
+        return
+
+    for idx, p in enumerate(results, start=1):
+        star = " ⭐" if p.get("favorite") else ""
+        print(f"{idx}. [{p['category']}] {p['title']}{star}")
+
+    print(f"\n{len(results)}개의 프롬프트를 찾았습니다.")
+
+
 def main() -> None:
     """프로그램 진입점 및 메인 실행 루프."""
     prompts = copy.deepcopy(INITIAL_PROMPTS)
@@ -109,6 +159,10 @@ def main() -> None:
             add_prompt(prompts)
         elif choice == "2":
             show_list(prompts)
+        elif choice == "3":
+            filter_by_category(prompts)
+        elif choice == "4":
+            search_prompt(prompts)
         elif choice == "0":
             print("\n프로그램을 종료합니다. 이용해주셔서 감사합니다!")
             break
